@@ -61,7 +61,7 @@ describe.only('Bookmark Endpoints', function() {
           .insert(bookmarksTest)
              })
     
-    it('GET /bookmarks responds with 200 and all of the articles', () => {
+    it('GET /bookmarks responds with 200 and all of the bookmarks', () => {
         return supertest(app)
             .get('/bookmarks')
             .expect(200, bookmarksTest)
