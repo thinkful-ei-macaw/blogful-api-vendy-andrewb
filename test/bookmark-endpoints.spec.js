@@ -64,7 +64,7 @@ describe.only('Bookmark Endpoints', function() {
     it('GET /bookmarks responds with 200 and all of the articles', () => {
         return supertest(app)
             .get('/bookmarks')
-            .expect(200)
+            .expect(200, bookmarksTest)
             // TODO: add more assertions about the body
       })
     })
