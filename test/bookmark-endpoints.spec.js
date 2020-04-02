@@ -16,6 +16,9 @@ describe('Bookmark Endpoints', function() {
 
     before('clean the table', () => db('bookmarks').truncate())
 
+    context('Given there are bookmarks in the database', () => {
+
+    
     const bookmarksTest = [
         {
         id: 1,
@@ -50,12 +53,15 @@ describe('Bookmark Endpoints', function() {
     
     ];
 
+
+
     beforeEach('insert bookmark', () => {
         return db
           .into('bookmarks')
           .insert(bookmarksTest)
              })
 
+    })
 
     
 })
