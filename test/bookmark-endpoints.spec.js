@@ -2,7 +2,7 @@ const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
 
-describe('Bookmark Endpoints', function() {
+describe.only('Bookmark Endpoints', function() {
     let db;
 
     before('make knex instance', () => {
@@ -10,6 +10,7 @@ describe('Bookmark Endpoints', function() {
             client: 'pg', 
             connection: process.env.TEST_DB_URL,
         })
+        app.set('db', db)
     })
 
     after('disconnect from db', () => db.destroy())
@@ -17,7 +18,6 @@ describe('Bookmark Endpoints', function() {
     before('clean the table', () => db('bookmarks').truncate())
 
     context('Given there are bookmarks in the database', () => {
-
     
     const bookmarksTest = [
         {
@@ -60,7 +60,13 @@ describe('Bookmark Endpoints', function() {
           .into('bookmarks')
           .insert(bookmarksTest)
              })
-
+    
+    it('GET /bookmarks responds with 200 and all of the articles', () => {
+        return supertest(app)
+            .get('/bookmarks')
+            .expect(200)
+            // TODO: add more assertions about the body
+      })
     })
 
     
