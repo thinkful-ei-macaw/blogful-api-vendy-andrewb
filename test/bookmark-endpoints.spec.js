@@ -17,6 +17,8 @@ describe.only('Bookmark Endpoints', function() {
 
     before('clean the table', () => db('bookmarks').truncate())
 
+    afterEach('cleanup', () => db('bookmarks').truncate())
+
     context('Given there are bookmarks in the database', () => {
     
     const bookmarksTest = [
@@ -67,7 +69,15 @@ describe.only('Bookmark Endpoints', function() {
             .expect(200, bookmarksTest)
             // TODO: add more assertions about the body
       })
+
+    it('GET /bookmarks/:bookmarks_id responds with 200 and the specified article', () => {
+        const bookmarkID = 2;
+        const expectedBookmark = bookmarksTest[bookmarkID - 1]
+        return supertest(app)
+            .get(`/bookmarks/${bookmarkID}`)
+            .expect(200, expectedBookmark)
     })
+})
 
     
 })

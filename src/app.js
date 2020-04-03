@@ -25,6 +25,15 @@ app.get('/bookmarks', (req, res, next) => {
         .catch(next)
 })
 
+app.get('/bookmarks/:bookmarks_id', (req, res, next) => {
+    const knexInstance = req.app.get('db')
+    BookmarksService.getById(knexInstance, req.params.bookmarks_id)
+        .then(book => {
+            res.json(book)
+        })
+        .catch(next)
+})
+
 app.get('/', (req, res) => {
     res.send('Hello, world!')
 })
