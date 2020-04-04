@@ -2,16 +2,23 @@
 const express = require('express');
 const uuid = require('uuid/v4');
 const logger = require('../logger');
-const { bookmarks } = require('../store');
-
+const { bookmarks } = require('../store/store');
+const BookmarksService = require('../bookmarks-service');
 
 const bookmarksRouter = express.Router();
 const bodyParser = express.json();
 
+
+
 bookmarksRouter
   .route('/bookmarks')
-  .get((req, res) => {
-    res.json(bookmarks);
+  .get((req, res, next) => {
+    const knexInstance = req.app.get('db');
+    BookmarksService.getAllBookmarks(knexInstance)
+      .then(bookmarks => {
+        res.json(bookmarks);
+      })
+      .catch(next);
   })
   .post(bodyParser, (req, res) => {
     const { title, url, description, rating } = req.body;
@@ -56,28 +63,33 @@ bookmarksRouter
 
     bookmarks.push(bookmark);
 
-    logger.info(`Bookmark with id ${bookmark.id} has been created`)
+    logger.info(`Bookmark with id ${bookmark.id} has been created`);
     res
       .status(201)
       .location(`http://localhost:8000/bookmarks/${bookmark.id}`)
-      .json(bookmark)
+      .json(bookmark);
 
   });
 
 bookmarksRouter
   .route('/bookmarks/:id')
-  .get((req, res) => {
+  .get((req, res, next) => {
     const { id } = req.params;
-    const bookmark = bookmarks.find(b => b.id == id);
-
-    if (!bookmark) {
-      logger.error(`Bookmark with id ${id} not found`);
-      return res
-        .status(404)
-        .send('Bookmark Not Found');
-    }
-
-    res.json(bookmark);
+    const knexInstance = req.app.get('db');
+    BookmarksService.getById(knexInstance, id)
+      .then(bookmarks => {
+        //const bookmark = bookmarks.find(b => b.id == id);
+        if (!bookmarks || bookmarks ==='') {
+          logger.error(`Bookmark with id ${id} not found`);
+          return res
+            .status(404)
+            .send('Bookmark Not Found');
+        }
+        res.json(bookmarks);
+      })
+      .catch(next);
+    
+    
   })
   .delete((req, res) => {
     const { id } = req.params;
@@ -100,4 +112,4 @@ bookmarksRouter
       .end();
   });
 
-module.exports = bookmarksRouter
+module.exports = bookmarksRouter;
